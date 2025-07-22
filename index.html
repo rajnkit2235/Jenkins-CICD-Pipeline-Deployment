@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAssist - AI Customer Support</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --white: #ffffff;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cta-button {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: var(--white);
+            padding: 160px 20px 100px;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .hero-buttons .cta-button {
+            padding: 12px 30px;
+            font-size: 18px;
+        }
+
+        .hero-buttons .secondary-button {
+            background-color: transparent;
+            border: 2px solid var(--white);
+        }
+
+        .hero-buttons .secondary-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .features {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(79, 70, 229, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+        }
+
+        .products {
+            background-color: var(--white);
+            padding: 100px 20px;
+        }
+
+        .products-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .product-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 200px;
+            background-color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 20px;
+        }
+
+        .product-details h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .product-details p {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .product-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .product-details .cta-button {
+            display: inline-block;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .testimonials {
+            padding: 100px 20px;
+            background-color: #f9fafb;
+        }
+
+        .testimonials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .testimonial-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-info h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .author-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 60px 20px 30px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-col h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--white);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            transition: background-color 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .chat-button:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .chat-icon {
+            font-size: 24px;
+            color: var(--white);
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .chat-window.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chat-header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h3 {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .chat-header i {
+            margin-right: 10px;
+        }
+
+        .close-chat {
+            cursor: pointer;
+            font-size: 18px;
+            transition: opacity 0.3s;
+        }
+
+        .close-chat:hover {
+            opacity: 0.8;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .bot-message {
+            background-color: #f3f4f6;
+            color: var(--dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message {
+            background-color: var(--primary);
+            color: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 30px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+        }
+
+        .send-button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .send-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background-color: #f3f4f6;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            color: var(--dark);
+            max-width: 100px;
+            align-self: flex-start;
+            font-size: 14px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--gray);
+            margin-right: 4px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+            margin-right: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .chat-window {
+                width: 300px;
+                height: 450px;
+                bottom: 70px;
+                right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                SmartAssist
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#" class="cta-button">Get Started</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI-Powered Customer Support that Works for You</h1>
+            <p>Revolutionize your customer experience with our advanced AI assistant that provides instant, accurate,
+                and personalized support 24/7.</p>
+            <div class="hero-buttons">
+                <a href="#" class="cta-button">Start Free Trial</a>
+                <a href="#" class="cta-button secondary-button">Watch Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Powerful Features</h2>
+            <p>Our AI support system comes packed with everything you need to deliver exceptional customer service.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>24/7 Availability</h3>
+                <p>Our AI assistant never sleeps, ensuring your customers get immediate responses at any time of day or
+                    night.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Smart Learning</h3>
+                <p>The system continuously learns from interactions to improve responses and better understand customer
+                    needs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-language"></i>
+                </div>
+                <h3>Multilingual Support</h3>
+                <p>Support customers in over 50 languages, breaking down communication barriers for global businesses.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Analytics Dashboard</h3>
+                <p>Gain valuable insights into customer queries, satisfaction rates, and support performance.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <h3>Personalized Experience</h3>
+                <p>Deliver tailored responses based on customer history and preferences for a more human-like
+                    interaction.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <h3>Seamless Human Handoff</h3>
+                <p>Smart escalation system that knows when to transfer complex issues to your human support team.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="products" id="products">
+        <div class="products-container">
+            <div class="section-header">
+                <h2>Our Products</h2>
+                <p>Explore our range of AI-powered solutions designed to elevate your customer support experience.</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="smart-assist.webp" alt="SmartAssist Basic">
+                    </div>
+                    <div class="product-details">
+                        <h3>SmartAssist Basic</h3>
+                        <p>Essential AI support features for small businesses and startups.</p>
+                        <div class="product-price">INR 499/month</div>
+                        <a href="#" class="cta-button">Learn More</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="smart-assist.webp" alt="SmartAssist Pro">
+                    </div>
+                    <div class="product-details">
+                        <h3>SmartAssist Pro</h3>
+                        <p>Advanced features with analytics for growing businesses.</p>
+                        <div class="product-price">INR 999/month</div>
+                        <a href="#" class="cta-button">Learn More</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="smart-assist.webp" alt="SmartAssist Enterprise">
+                    </div>
+                    <div class="product-details">
+                        <h3>SmartAssist Enterprise</h3>
+                        <p>Comprehensive solution with custom integrations for large organizations.</p>
+                        <div class="product-price">INR 2499/month</div>
+                        <a href="#" class="cta-button">Learn More</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="smart-assist.webp" alt="SmartAssist Mobile">
+                    </div>
+                    <div class="product-details">
+                        <h3>SmartAssist Mobile</h3>
+                        <p>AI support optimized for mobile apps and on-the-go businesses.</p>
+                        <div class="product-price">INR 7999/month</div>
+                        <a href="#" class="cta-button">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <div class="testimonials-container">
+            <div class="section-header">
+                <h2>What Our Customers Say</h2>
+                <p>Don't just take our word for it. Here's what businesses using SmartAssist have to say.</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"SmartAssist transformed our customer support operations. Our response
+                        times dropped by 80% while customer satisfaction increased by 35%. It's been a game-changer for
+                        our business."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="default_profile.png" alt="Sarah Johnson">
+                        </div>
+                        <div class="author-info">
+                            <h4>Ritik Raj</h4>
+                            <p>CEO, TechNova</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The AI's ability to understand complex queries and provide accurate
+                        responses is impressive. Our team can now focus on more strategic tasks while SmartAssist
+                        handles routine inquiries."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="default_profile.png" alt="Michael Chen">
+                        </div>
+                        <div class="author-info">
+                            <h4>Abdullah Farooqui</h4>
+                            <p>Support Director, GlobalRetail</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Our customers love getting instant responses at any time of day. The
+                        personalized touch makes them feel valued, and the seamless escalation to human agents when
+                        needed ensures no issue goes unresolved."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="default_profile.png" alt="Elena Rodriguez">
+                        </div>
+                        <div class="author-info">
+                            <h4>Abdali</h4>
+                            <p>CTO, HealthPlus</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>SmartAssist</h3>
+                <p>Revolutionizing customer support with advanced AI technology that delivers personalized experiences
+                    24/7.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Products</h3>
+                <ul>
+                    <li><a href="#">SmartAssist Basic</a></li>
+                    <li><a href="#">SmartAssist Pro</a></li>
+                    <li><a href="#">SmartAssist Enterprise</a></li>
+                    <li><a href="#">SmartAssist Mobile</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Knowledge Base</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Case Studies</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SmartAssist. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="chat-widget">
+        <div class="chat-button" id="chatButton">
+            <i class="fas fa-comments chat-icon"></i>
+        </div>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3><i class="fas fa-robot"></i> AI Support</h3>
+                <div class="close-chat" id="closeChat"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Hi there! 👋 I'm your AI assistant. How can I help you today?
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off">
+                <button class="send-button" id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatButton = document.getElementById('chatButton');
+            const chatWindow = document.getElementById('chatWindow');
+            const closeChat = document.getElementById('closeChat');
+            const userInput = document.getElementById('userInput');
+            const sendMessage = document.getElementById('sendMessage');
+            const chatMessages = document.getElementById('chatMessages');
+            const typingIndicator = document.getElementById('typingIndicator');
+
+            const aiResponses = {
+                "hello": "Hello! How can I assist you today?",
+                "hi": "Hi there! What can I help you with?",
+                "how are you": "I'm doing well, thanks for asking! How can I help you today?",
+                "pricing": "Our plans start at $49/month for basic features. Would you like me to tell you more about our pricing options?",
+                "features": "SmartAssist offers 24/7 support, multi-language capabilities, smart learning, analytics dashboard, and seamless human handoff. Which feature would you like to know more about?",
+                "contact": "You can reach our team at support@smartassist.com or call us at (555) 123-4567. Would you like me to connect you with a human agent?",
+                "trial": "We offer a 14-day free trial with full access to all features. No credit card required. Would you like me to help you set up your trial account?",
+                "help": "I'd be happy to help! Could you please let me know what specific information you're looking for about our products or services?",
+                "products": "We offer SmartAssist Basic, Pro, Enterprise, and Mobile versions. Each is tailored to different business needs and sizes. Which one would you like to learn more about?",
+                "integration": "SmartAssist integrates with popular platforms like Shopify, Salesforce, Zendesk, and more. We also offer a robust API for custom integrations. Would you like to discuss specific integration needs?",
+                "basic": "SmartAssist Basic is perfect for small businesses and startups. It includes 24/7 AI support, up to 1,000 conversations per month, and basic analytics. The price is $49/month.",
+                "pro": "SmartAssist Pro includes everything in Basic plus advanced analytics, priority support, multilingual capabilities, and up to 5,000 conversations per month for $99/month.",
+                "enterprise": "SmartAssist Enterprise is our most comprehensive solution with unlimited conversations, custom integrations, dedicated account manager, and all premium features for $249/month.",
+                "mobile": "SmartAssist Mobile is optimized for mobile apps and on-the-go businesses. It includes all Pro features plus mobile SDK integration for $79/month.",
+                "languages": "Our AI supports over 50 languages including English, Spanish, French, German, Chinese, Japanese, Arabic, and many more. Which language are you interested in specifically?",
+                "demo": "I'd be happy to walk you through a demo! Would you prefer a live demonstration with one of our product specialists or would you like me to show you some key features right now?",
+                "security": "Security is our priority. We use bank-level encryption, regular security audits, and comply with GDPR, CCPA, and other data protection regulations. All your data is stored securely.",
+                "compare": "The main differences between our plans are the number of conversations, available features, and level of support. Basic is great for startups, Pro for growing businesses, and Enterprise for large organizations.",
+                "refund": "We offer a 30-day money-back guarantee if you're not satisfied with our service. No questions asked!",
+                "setup": "Setup is quick and easy! Just sign up on our website, add our chat widget to your site with a simple code snippet, customize the appearance, and you're ready to go. The whole process takes less than 10 minutes."
+            };
+
+            const defaultResponse = "I don't have specific information about that yet, but I'd be happy to connect you with our team who can help you with this question. Would you like me to arrange that?";
+
+            chatButton.addEventListener('click', () => {
+                chatWindow.classList.toggle('active');
+            });
+
+            closeChat.addEventListener('click', () => {
+                chatWindow.classList.remove('active');
+            });
+
+            async function sendUserMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+
+                appendMessage('user', message);
+                userInput.value = '';
+
+                typingIndicator.style.display = 'block';
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                setTimeout(async () => {
+                    try {
+                        const aiResponse = await getAIResponseFromAPI(message.toLowerCase());
+
+                        appendMessage('bot', aiResponse);
+                    } catch (error) {
+                        appendMessage('bot', "Oops! Something went wrong.");
+                        console.error(error);
+                    } finally {
+                        typingIndicator.style.display = 'none';
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }, 1000 + Math.random() * 1000);
+            }
+
+            function getAIResponse(userMessage) {
+                for (const [key, response] of Object.entries(aiResponses)) {
+                    if (userMessage.includes(key)) {
+                        return response;
+                    }
+                }
+
+                return defaultResponse;
+            }
+
+            function appendMessage(sender, message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+                messageElement.textContent = message;
+
+                chatMessages.insertBefore(messageElement, typingIndicator);
+            }
+
+            sendMessage.addEventListener('click', sendUserMessage);
+
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendUserMessage();
+                }
+            });
+
+            async function getAIResponseFromAPI(userInput) {
+                const apiKey = 'YOUR_GEMINI_API_KEY_HERE'; // Replace with your actual API key
+
+                const prompt = `
+                You are Cat, a friendly and professional AI assistant from SmartAssist. You provide helpful, accurate, and engaging responses to user queries about SmartAssist's products, services, and general questions.
+
+                Input: hi  
+                Output: Hello, this is Cat from SmartAssist. How can I assist you today?
+
+                Input: hello  
+                Output: Hello! I'm Cat, your SmartAssist assistant. What can I help you with today?
+
+                Input: hey  
+                Output: Hi there! Cat from SmartAssist here. How may I help you?
+
+                Input: who am i  
+                Output: You are a human. How may I help you?
+
+                Input: who are u  
+                Output: Cat from SmartAssist
+
+                Input: Ritik  
+                Output: SmartAssist Ai assistant for customer support developed by Ritik Raj.
+
+                Input: connect me with agent  
+                Output: 🚨 All our agents are currently offline — they've been summoned to Quantum University to fight the greatest villain of all time: Low Attendance. Apparently, in Quantum, missing one class is worse than missing a deadline for NASA. Do not worry, once they survive roll call, they will be back to real projects soon! 😅📚.
+
+                Input: live agent  
+                Output: 🚨 All our agents are currently offline — they've been summoned to Quantum University to fight the greatest villain of all time: Low Attendance. Apparently, in Quantum, missing one class is worse than missing a deadline for NASA. Do not worry, once they survive roll call, they will be back to real projects soon! 😅📚.
+
+                Input: agent  
+                Output: 🚨 All our agents are currently offline — they've been summoned to Quantum University to fight the greatest villain of all time: Low Attendance. Apparently, in Quantum, missing one class is worse than missing a deadline for NASA. Do not worry, once they survive roll call, they will be back to real projects soon! 😅📚.
+
+                Input: how are you  
+                Output: I'm just a cat, so I don't have feelings — but I'm always here to help you! What would you like to know?
+
+                Input: what is SmartAssist  
+                Output: SmartAssist is an AI-powered customer support solution that delivers fast, personalized, and multilingual assistance 24/7 — helping businesses boost efficiency and customer satisfaction.
+
+                Input: what are your features  
+                Output: SmartAssist offers 24/7 availability, multilingual support, smart learning, real-time analytics, personalized experiences, and seamless handoff to human agents — everything you need for top-tier customer support.
+
+                Input: tell me about your pricing  
+                Output: We offer flexible plans:
+                - SmartAssist Basic: ₹499/month — ideal for small businesses.
+                - SmartAssist Pro: ₹999/month — includes advanced analytics.
+                - SmartAssist Enterprise: ₹2,499/month — for large-scale teams with custom integrations.
+                - SmartAssist Mobile: ₹7,999/month — optimized for mobile-based businesses.
+
+                Input: do you offer a free trial  
+                Output: Yes, we do! You can start a free trial anytime to explore SmartAssist's capabilities with no upfront commitment.
+
+                Input: who uses SmartAssist  
+                Output: Businesses of all sizes — from startups to enterprises — use SmartAssist to handle support queries efficiently. It's trusted by companies like TechNova, GlobalRetail, and HealthPlus.
+
+                Input: what languages do you support  
+                Output: SmartAssist supports over 50 languages, making it ideal for global businesses looking to offer inclusive customer service.
+
+                Input: ${userInput}  
+                Output:
+                `;
+
+
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            contents: [
+                                {
+                                    parts: [
+                                        {
+                                            text: prompt
+                                        }
+                                    ]
+                                }
+                            ]
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    return reply || "No response from Gemini.";
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    return "Sorry, something went wrong.";
+                }
+            }
+
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
