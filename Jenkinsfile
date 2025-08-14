@@ -12,7 +12,6 @@ pipeline {
         IMAGE_NAME = 'smartassist-ai-customer-support'
         K8S_NAMESPACE = 'smart-frontened'
         IMAGE_TAG = 'latest'
-        // Remove KUBECONFIG from here - we'll use it inside stages
     }
     
     stages {
@@ -58,24 +57,23 @@ pipeline {
             }
         }
         
-        stage('Push Docker Image') {
+        stage('Load Image to KIND') {
             steps {
-                echo '📤 Pushing SmartAssist AI to Docker Hub...'
+                echo '📦 Loading image directly to KIND cluster (bypassing Docker Hub)...'
                 
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
-                        echo "🔐 Logging into Docker Hub securely..."
-                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        
-                        echo "📤 Pushing ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}..."
-                        docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-                        
-                        echo "✅ Image successfully pushed to Docker Hub!"
-                        docker logout
-                    """
-                }
+                sh """
+                    echo "Loading ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} to KIND cluster..."
+                    
+                    # Load the locally built image directly into KIND cluster
+                    kind load docker-image ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} --name dev-cluster
+                    
+                    echo "✅ Image loaded to KIND cluster successfully!"
+                    
+                    # Verify image is loaded in cluster
+                    docker exec dev-cluster-control-plane crictl images | grep smartassist || echo "Image loading in progress..."
+                """
                 
-                echo '✅ Docker image pushed successfully!'
+                echo '✅ Image loaded to cluster successfully!'
             }
         }
         
@@ -83,21 +81,26 @@ pipeline {
             steps {
                 echo '🚀 Deploying SmartAssist AI to Kubernetes...'
                 
-                // Use withCredentials for kubeconfig instead of environment
                 withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh """
-                        echo "📝 Updating deployment.yaml with image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+                        echo "📝 Updating deployment.yaml with local image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
                         
-                        # Update deployment.yaml
-                        sed -i 's|IMAGE_PLACEHOLDER|${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}|g' k8s/deployment.yaml
+                        # Create a copy of deployment.yaml and update it
+                        cp k8s/deployment.yaml k8s/deployment-local.yaml
                         
-                        echo "=== Deployment Configuration ==="
-                        cat k8s/deployment.yaml | grep -A 3 -B 3 image:
+                        # Replace IMAGE_PLACEHOLDER with actual image
+                        sed -i 's|IMAGE_PLACEHOLDER|${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}|g' k8s/deployment-local.yaml
+                        
+                        # Add imagePullPolicy: Never to use local image (not from Docker Hub)
+                        sed -i '/image: ${DOCKER_USERNAME}\\/${IMAGE_NAME}:${IMAGE_TAG}/a\\        imagePullPolicy: Never' k8s/deployment-local.yaml
+                        
+                        echo "=== Local Deployment Configuration ==="
+                        cat k8s/deployment-local.yaml | grep -A 6 -B 2 image:
                         
                         echo "🚀 Applying deployment to namespace: ${K8S_NAMESPACE}..."
                         
                         # Apply deployment and service
-                        kubectl --kubeconfig=\$KUBECONFIG apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}
+                        kubectl --kubeconfig=\$KUBECONFIG apply -f k8s/deployment-local.yaml -n ${K8S_NAMESPACE}
                         kubectl --kubeconfig=\$KUBECONFIG apply -f k8s/service.yaml -n ${K8S_NAMESPACE}
                         
                         echo "⏳ Waiting for deployment to complete..."
@@ -107,9 +110,11 @@ pipeline {
                         pkill -f "kubectl port-forward.*smartassist-ai-service" || true
                         sleep 2
                         
-                        # Start port forward in background
+                        # Start port forward in background for external access
                         nohup kubectl --kubeconfig=\$KUBECONFIG port-forward --address 0.0.0.0 service/smartassist-ai-service 8080:80 -n ${K8S_NAMESPACE} > /tmp/port-forward.log 2>&1 &
                         sleep 5
+                        
+                        echo "🌐 Port forward started - app should be accessible on port 8080"
                     """
                 }
                 
@@ -124,7 +129,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh """
                         echo "=== NAMESPACE: ${K8S_NAMESPACE} ==="
-                        kubectl --kubeconfig=\$KUBECONFIG get namespace ${K8S_NAMESPACE}
+                        kubectl --kubeconfig=\$KUBECONFIG get namespace ${K8S_NAMESPACE} || echo "Namespace not found"
                         
                         echo "=== PODS STATUS ==="
                         kubectl --kubeconfig=\$KUBECONFIG get pods -n ${K8S_NAMESPACE} -l app=smartassist-ai-app -o wide
@@ -135,16 +140,20 @@ pipeline {
                         echo "=== DEPLOYMENT STATUS ==="
                         kubectl --kubeconfig=\$KUBECONFIG get deployment smartassist-ai-app -n ${K8S_NAMESPACE}
                         
+                        echo "=== POD LOGS (last 10 lines) ==="
+                        kubectl --kubeconfig=\$KUBECONFIG logs -l app=smartassist-ai-app -n ${K8S_NAMESPACE} --tail=10 || echo "No logs available yet"
+                        
                         echo "=== ACCESS INFORMATION ==="
                         echo "🌐 External URL: http://13.221.231.200:8080"
-                        echo "📱 Your SmartAssist AI is accessible externally!"
+                        echo "📱 Your SmartAssist AI should be accessible externally!"
+                        echo "🔧 If not working, check port forward: ps aux | grep port-forward"
                         
-                        echo "=== RECENT EVENTS ==="
-                        kubectl --kubeconfig=\$KUBECONFIG get events -n ${K8S_NAMESPACE} --sort-by='.lastTimestamp' | tail -5
+                        echo "=== PORT FORWARD STATUS ==="
+                        ps aux | grep -E "port-forward.*smartassist" | grep -v grep || echo "Port forward not found - may need manual setup"
                     """
                 }
                 
-                echo '🎉 SmartAssist AI Customer Support is running successfully!'
+                echo '🎉 SmartAssist AI Customer Support verification complete!'
             }
         }
     }
@@ -155,14 +164,16 @@ pipeline {
                 echo '🎉 SUCCESS! SmartAssist AI deployed to Kubernetes!'
                 echo ''
                 echo '📊 Deployment Summary:'
-                echo "   ✅ Image: ${env.DOCKER_USERNAME}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                echo "   ✅ Image: ${env.DOCKER_USERNAME}/${env.IMAGE_NAME}:${env.IMAGE_TAG} (local)"
                 echo "   ✅ Namespace: ${env.K8S_NAMESPACE}"
                 echo '   ✅ Cluster: KIND (Kubernetes in Docker)'
-                echo '   ✅ Zero downtime rolling update completed'
+                echo '   ✅ Method: Direct image load (no Docker Hub needed)'
                 echo ''
                 echo '🌐 Access your SmartAssist AI:'
                 echo '   • External URL: http://13.221.231.200:8080'
-                echo '   • AI customer support fully functional'
+                echo '   • If not working, run: kubectl port-forward --address 0.0.0.0 service/smartassist-ai-service 8080:80 -n smart-frontened'
+                echo ''
+                echo '💡 Next: Set up Docker Hub Personal Access Token for full CI/CD'
             }
         }
         
@@ -171,10 +182,11 @@ pipeline {
                 echo '❌ FAILURE: SmartAssist AI deployment failed!'
                 echo ''
                 echo '🔧 Troubleshooting steps:'
-                echo "   1. Check Docker build: docker images | grep smartassist"
-                echo '   2. Check kubectl access: kubectl get nodes'
-                echo "   3. Check pods: kubectl logs -l app=smartassist-ai-app -n smart-frontened"
-                echo '   4. Check KIND cluster: docker ps | grep kind'
+                echo "   1. Check Docker images: docker images | grep smartassist"
+                echo '   2. Check KIND cluster: docker ps | grep kind'
+                echo '   3. Check kubectl access: kubectl get nodes'
+                echo "   4. Check namespace: kubectl get namespace ${env.K8S_NAMESPACE}"
+                echo "   5. Check pods: kubectl get pods -n ${env.K8S_NAMESPACE}"
             }
         }
         
@@ -183,14 +195,11 @@ pipeline {
                 echo '🏁 Pipeline completed!'
                 
                 sh '''
-                    echo "🧹 Final cleanup - removing unused Docker resources..."
+                    echo "🧹 Final cleanup..."
                     docker system prune -f || true
                     
-                    echo "💾 Remaining disk space:"
+                    echo "💾 Disk space:"
                     df -h | grep -E '(Filesystem|/dev/)' | head -2
-                    
-                    echo "🔗 Port forward status:"
-                    ps aux | grep -E "port-forward.*smartassist" | grep -v grep || echo "No active port forwards"
                 '''
             }
         }
