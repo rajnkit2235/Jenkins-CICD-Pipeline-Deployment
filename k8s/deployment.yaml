@@ -1,6 +1,3 @@
-# k8s/deployment.yaml
-# This file tells Kubernetes how to run your smart-frontened-web-app
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,82 +5,27 @@ metadata:
   namespace: smart-frontened
   labels:
     app: smartassist-ai-app
-    component: frontend
-    version: v1
 spec:
-  # Number of pods to run (2 for high availability)
   replicas: 2
-  
-  # Rolling update strategy (zero downtime)
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1    # Only 1 pod down during update
-      maxSurge: 1          # Only 1 extra pod during update
-  
-  # Which pods this deployment manages
   selector:
     matchLabels:
       app: smartassist-ai-app
-  
-  # Pod template
   template:
     metadata:
       labels:
         app: smartassist-ai-app
-        component: frontend
     spec:
       containers:
       - name: smart-frontened-container
-        # Jenkins pipeline will replace this placeholder
-        image: IMAGE_PLACEHOLDER
-        
-        # Port your app listens on
+        image: rajankit6203/smartassist-ai-customer-support:latest
         ports:
-        - containerPort: 8002
-          name: http
-          protocol: TCP
-        
-        # Resource limits (adjust based on your app needs)
+        - containerPort: 80
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "128Mi"
+            cpu: "100m"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
-        
-        # Health checks (Kubernetes restarts if unhealthy)
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8002
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8002
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-        
-        # Environment variables (if your app needs any)
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: PORT
-          value: "8002"
-        
-        # Security settings
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-      
-      # Restart policy
+            memory: "256Mi"
+            cpu: "200m"
+        # NO restrictive security context - let nginx run as it needs to
       restartPolicy: Always
