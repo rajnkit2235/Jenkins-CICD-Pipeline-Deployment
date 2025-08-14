@@ -3,7 +3,7 @@ pipeline {
         label 'jenkins-agent'
     }
     
-    triggers {                             // github trigger
+    triggers {                             // github triggerr
         githubPush()
     }
     
