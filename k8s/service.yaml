@@ -1,0 +1,42 @@
+# k8s/service.yaml  
+# This file tells Kubernetes how to expose your smart-frontened-web-app
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartassist-ai-service
+  namespace: smart-frontened
+  labels:
+    app: smartassist-ai-app
+    service: smartassist-ai-service
+spec:
+  # Internal service (ClusterIP)
+  selector:
+    app: smartassist-ai-app
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8002
+    targetPort: 8002
+  type: ClusterIP
+
+---
+# External access service (NodePort)
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartassist-ai-external
+  namespace: smart-frontened
+  labels:
+    app: smartassist-ai-app
+    service: smartassist-ai-external
+spec:
+  selector:
+    app: smartassist-ai-app
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8002
+    targetPort: 8002
+    nodePort: 30080      # External access via http://13.221.231.200:30080
+  type: NodePort
